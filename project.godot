@@ -1,0 +1,25 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Server"
+run/main_scene="uid://cxkh7i0c88hrg"
+config/features=PackedStringArray("4.4", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Debug="*res://Globals/debug.gd"
+SphereGlobals="*res://Globals/sphere_globals.gd"
+
+[dotnet]
+
+project/assembly_name="Server"

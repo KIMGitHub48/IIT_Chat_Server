@@ -1,0 +1,103 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvjqqkq2ecle1"]
+
+[sub_resource type="GDScript" id="GDScript_xb563"]
+resource_name = "_"
+script/source = "extends Node2D
+
+
+@onready var server_log:RichTextLabel = $Main/ServerLog
+@onready var start_server_button:Button = $Main/StartServerButton
+@onready var user_item_list: ItemList = $User/UserItemList
+@onready var server_ui = %ServerUI
+@onready var database = %Database
+
+
+func _on_start_server_pressed():
+	if start_server_button.get_meta(\"SERVER_START\") == false:
+		if get_parent().net_node.public_start_server():
+			start_server_button.set_meta(\"SERVER_START\", true)
+			server_log.add_text(\"Сервер запущен\\n\")
+			start_server_button.text = \"Остановить сервер\"
+		else:
+			server_log.add_text(\"Ошибка запуска сервера\")
+	else:
+		if get_parent().net_node.public_stop_server():
+			start_server_button.set_meta(\"SERVER_START\", false)
+			server_log.add_text(\"Сервер остановлен\\n\")
+			start_server_button.text = \"Запустить сервер\"
+		else:
+			server_log.add_text(\"Ошибка остановки сервера\\n\")
+
+
+func _on_send_data_base_pressed():
+	var core_node = get_node(SphereGlobals.CORE)
+	core_node.database_node.public_load_from_file()
+
+
+func _on_open_user_pressed():
+	var users = database.public_get_users_data()
+	#user_item_list.add_item(\"Имя\"+ \"   \" +\"Пароль\"+ \"   \" +\"Доступ\")
+	for e in users:
+		var text = str(e.Name) + \"      \" + str(e.Password) + \"      \" + str(e.Access)
+		user_item_list.add_item(text)
+"
+
+[node name="ServerUi" type="Node2D"]
+script = SubResource("GDScript_xb563")
+
+[node name="Main" type="Panel" parent="."]
+offset_right = 1147.0
+offset_bottom = 646.0
+
+[node name="StartServerButton" type="Button" parent="Main"]
+layout_mode = 0
+offset_left = 458.0
+offset_top = 130.0
+offset_right = 609.0
+offset_bottom = 161.0
+text = "Запустить сервер"
+metadata/SERVER_START = false
+
+[node name="ServerLog" type="RichTextLabel" parent="Main"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 406.0
+offset_right = 1149.0
+offset_bottom = 647.0
+
+[node name="SendDataBase" type="Button" parent="Main"]
+layout_mode = 0
+offset_left = 430.0
+offset_top = 206.0
+offset_right = 633.0
+offset_bottom = 237.0
+text = "Отправить базу данных"
+
+[node name="OpenUser" type="Button" parent="Main"]
+layout_mode = 0
+offset_right = 124.0
+offset_bottom = 31.0
+text = "Пользователи"
+
+[node name="User" type="Panel" parent="."]
+offset_left = 289.0
+offset_top = 81.0
+offset_right = 573.0
+offset_bottom = 430.0
+
+[node name="Up" type="Label" parent="User"]
+layout_mode = 0
+offset_top = 10.0
+offset_right = 284.0
+offset_bottom = 45.0
+text = "        Имя	         Пароль        Доступ"
+
+[node name="UserItemList" type="ItemList" parent="User"]
+layout_mode = 0
+offset_top = 45.0
+offset_right = 284.0
+offset_bottom = 348.0
+
+[connection signal="pressed" from="Main/StartServerButton" to="." method="_on_start_server_pressed"]
+[connection signal="pressed" from="Main/SendDataBase" to="." method="_on_send_data_base_pressed"]
+[connection signal="pressed" from="Main/OpenUser" to="." method="_on_open_user_pressed"]

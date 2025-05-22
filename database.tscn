@@ -1,0 +1,76 @@
+[gd_scene load_steps=4 format=3 uid="uid://dq4wa3fgo0c4x"]
+
+[sub_resource type="GDScript" id="GDScript_dil46"]
+resource_name = "_"
+script/source = "extends Node
+
+
+#@onready var lockal_node = $Lockal
+@onready var lockal_data_base = $SQLite
+
+
+func public_get_users_data() -> Array:
+	return lockal_data_base.public_get_users_data()
+#func public_save_to_file():
+	#lockal_node.public_save_to_file()
+#
+#
+#func public_load_from_file():
+	#lockal_node.public_load_from_file()
+"
+
+[sub_resource type="GDScript" id="GDScript_ra2q6"]
+resource_name = "_"
+script/source = "extends Node
+#
+#
+#var lockal_database_name = \"Price.pp\"
+#var database
+#
+#
+#func public_save_to_file(database, lockal_database_name):
+	#var file = FileAccess.open(\"res://\" + lockal_database_name, FileAccess.WRITE)
+	#file.store_var(database)
+	#file.close()
+#
+#
+#func public_load_from_file(database, lockal_database_name):
+	#var file_path = \"res://\" + lockal_database_name
+	#var file = FileAccess.open(file_path, FileAccess.READ)
+	#database = file.get_var()
+	#return database
+"
+
+[sub_resource type="GDScript" id="GDScript_rw4k8"]
+resource_name = "_"
+script/source = "extends Node
+
+
+var sqlite_database
+
+
+func _ready():
+	sqlite_database = SQLite.new()
+	sqlite_database.path = \"res://sqlite_database.db\"
+	sqlite_database.verbosity_level = SQLite.VerbosityLevel.NORMAL
+	sqlite_database.open_db()
+
+
+func public_get_users_data():
+	var query_string : String = \"SELECT * FROM User;\"
+	var param_bindings : Array = [24]
+	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
+	if success: 
+		return sqlite_database.query_result
+	else:
+		return null
+"
+
+[node name="Database" type="Node"]
+script = SubResource("GDScript_dil46")
+
+[node name="Lockal" type="Node" parent="."]
+script = SubResource("GDScript_ra2q6")
+
+[node name="SQLite" type="Node" parent="."]
+script = SubResource("GDScript_rw4k8")
