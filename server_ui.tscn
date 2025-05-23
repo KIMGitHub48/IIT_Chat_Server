@@ -1,15 +1,28 @@
-[gd_scene load_steps=2 format=3 uid="uid://bvjqqkq2ecle1"]
+[gd_scene load_steps=5 format=3 uid="uid://bvjqqkq2ecle1"]
 
 [sub_resource type="GDScript" id="GDScript_xb563"]
 resource_name = "_"
 script/source = "extends Node2D
 
 
+var users: Array
+var current_selected_item = -1
+
+
+@onready var core_node = get_node(SphereGlobals.CORE)
 @onready var server_log:RichTextLabel = $Main/ServerLog
 @onready var start_server_button:Button = $Main/StartServerButton
+@onready var user_panel = $User
 @onready var user_item_list: ItemList = $User/UserItemList
-@onready var server_ui = %ServerUI
-@onready var database = %Database
+@onready var write_button = $User/Write
+@onready var name_edit = $User/NameEdit
+@onready var password_edit = $User/PasswordEdit
+@onready var access_edit = $User/AccessEdit
+@onready var message_label = $User/Message
+
+
+func _ready():
+	user_panel.visible = false
 
 
 func _on_start_server_pressed():
@@ -29,18 +42,80 @@ func _on_start_server_pressed():
 			server_log.add_text(\"Ошибка остановки сервера\\n\")
 
 
+func is_valid_name(name) -> bool:
+	if name == \"\": 
+		message_label.text = \"Введите Имя!\"
+		return false
+	for i in users.size() - 1:
+		if (users[i].name == name and i != current_selected_item): 
+			message_label.text = \"Такое имя уже используется!\"
+			return false
+	return true
+
+
+func is_valid_password(password) -> bool:
+	if password == \"\": 
+		message_label.text = \"Пароль не должен быть пустым!\"
+		return false
+	return true
+
+
+func is_valid_access(access) -> bool:
+	if (access == \"0\" or access == \"1\" or access == \"2\"): return true
+	message_label.text = \"Доступ не равен 0,1,2!\"
+	return false
+
+
 func _on_send_data_base_pressed():
-	var core_node = get_node(SphereGlobals.CORE)
 	core_node.database_node.public_load_from_file()
 
 
 func _on_open_user_pressed():
-	var users = database.public_get_users_data()
-	#user_item_list.add_item(\"Имя\"+ \"   \" +\"Пароль\"+ \"   \" +\"Доступ\")
+	user_panel.visible = true
+	users = core_node.database_node.public_get_users_data()
+	user_item_list.clear()
 	for e in users:
-		var text = str(e.Name) + \"      \" + str(e.Password) + \"      \" + str(e.Access)
+		var text = str(e.name) + \"      \" + str(e.password) + \"      \" + str(e.access)
 		user_item_list.add_item(text)
+
+
+func _on_close_pressed() -> void:
+	user_panel.visible = false
+
+
+func _on_user_item_list_item_selected(index: int) -> void:
+	current_selected_item = index
+	name_edit.text = str(users[index].name)
+	password_edit.text = str(users[index].password)
+	access_edit.text = str(users[index].access)
+
+
+func _on_update_pressed() -> void:
+	if current_selected_item != -1:
+		if is_valid_name(name_edit.text):
+			core_node.database_node.public_update_user(users[current_selected_item].name,
+				name_edit.text,password_edit.text,access_edit.text)
+			_on_open_user_pressed()
+			message_label.text = \"Обновлено.\"
+	else:
+		message_label.text = \"Запись не выбрана!\"
+
+
+func _on_add_new_pressed() -> void:
+	if (is_valid_name(name_edit.text) and is_valid_password(password_edit.text) and is_valid_access(access_edit.text)):
+		core_node.database_node.public_insert_user(name_edit.text,password_edit.text,access_edit.text)
+		message_label.text = \"Обновлено.\"
+		_on_open_user_pressed()
 "
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wuek4"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_106a4"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l2pos"]
+bg_color = Color(0, 0, 0, 1)
 
 [node name="ServerUi" type="Node2D"]
 script = SubResource("GDScript_xb563")
@@ -80,24 +155,105 @@ offset_bottom = 31.0
 text = "Пользователи"
 
 [node name="User" type="Panel" parent="."]
-offset_left = 289.0
-offset_top = 81.0
-offset_right = 573.0
-offset_bottom = 430.0
+offset_left = 391.0
+offset_top = 89.0
+offset_right = 675.0
+offset_bottom = 600.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wuek4")
+
+[node name="Close" type="Button" parent="User"]
+layout_mode = 0
+offset_left = 267.0
+offset_right = 284.0
+offset_bottom = 28.0
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_106a4")
+text = "x"
 
 [node name="Up" type="Label" parent="User"]
 layout_mode = 0
-offset_top = 10.0
+offset_top = 37.0
 offset_right = 284.0
-offset_bottom = 45.0
-text = "        Имя	         Пароль        Доступ"
+offset_bottom = 62.0
+text = "       Имя          Пароль         Доступ"
 
 [node name="UserItemList" type="ItemList" parent="User"]
 layout_mode = 0
-offset_top = 45.0
+offset_top = 62.0
 offset_right = 284.0
 offset_bottom = 348.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_l2pos")
+
+[node name="Name" type="Label" parent="User"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 353.0
+offset_right = 64.0
+offset_bottom = 376.0
+text = "Имя"
+
+[node name="NameEdit" type="LineEdit" parent="User"]
+offset_left = 94.0
+offset_top = 349.0
+offset_right = 282.0
+offset_bottom = 380.0
+
+[node name="Password" type="Label" parent="User"]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 383.0
+offset_right = 73.0
+offset_bottom = 406.0
+text = "Пароль"
+
+[node name="PasswordEdit" type="LineEdit" parent="User"]
+offset_left = 94.0
+offset_top = 379.0
+offset_right = 282.0
+offset_bottom = 410.0
+
+[node name="Доступ" type="Label" parent="User"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 413.0
+offset_right = 71.0
+offset_bottom = 436.0
+text = "Доступ"
+
+[node name="AccessEdit" type="LineEdit" parent="User"]
+offset_left = 94.0
+offset_top = 409.0
+offset_right = 282.0
+offset_bottom = 440.0
+
+[node name="AddNew" type="Button" parent="User"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 478.0
+offset_right = 114.0
+offset_bottom = 509.0
+text = "Добавить"
+
+[node name="Update" type="Button" parent="User"]
+layout_mode = 0
+offset_left = 151.0
+offset_top = 478.0
+offset_right = 240.0
+offset_bottom = 509.0
+text = "Обновить"
+
+[node name="Message" type="Label" parent="User"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 446.0
+offset_right = 270.0
+offset_bottom = 469.0
+horizontal_alignment = 1
 
 [connection signal="pressed" from="Main/StartServerButton" to="." method="_on_start_server_pressed"]
 [connection signal="pressed" from="Main/SendDataBase" to="." method="_on_send_data_base_pressed"]
 [connection signal="pressed" from="Main/OpenUser" to="." method="_on_open_user_pressed"]
+[connection signal="pressed" from="User/Close" to="." method="_on_close_pressed"]
+[connection signal="item_selected" from="User/UserItemList" to="." method="_on_user_item_list_item_selected"]
+[connection signal="pressed" from="User/AddNew" to="." method="_on_add_new_pressed"]
+[connection signal="pressed" from="User/Update" to="." method="_on_update_pressed"]

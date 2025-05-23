@@ -11,6 +11,14 @@ script/source = "extends Node
 
 func public_get_users_data() -> Array:
 	return lockal_data_base.public_get_users_data()
+
+
+func public_update_user(name,new_name,new_password,new_access):
+	lockal_data_base.public_update_user(name,new_name,new_password,new_access)
+
+
+func public_insert_user(new_name,new_password,new_access):
+	lockal_data_base.public_insert_user(new_name,new_password,new_access)
 #func public_save_to_file():
 	#lockal_node.public_save_to_file()
 #
@@ -54,6 +62,7 @@ func _ready():
 	sqlite_database.path = \"res://sqlite_database.db\"
 	sqlite_database.verbosity_level = SQLite.VerbosityLevel.NORMAL
 	sqlite_database.open_db()
+	
 
 
 func public_get_users_data():
@@ -61,6 +70,26 @@ func public_get_users_data():
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success: 
+		return sqlite_database.query_result
+	else:
+		return null
+
+
+func public_update_user(name,new_name,new_password,new_access):
+	var query_string : String = \"UPDATE User SET name = '%s', password = '%s', access = %s WHERE name = '%s';\" %[new_name,new_password,new_access,name]
+	var param_bindings : Array = [24]
+	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
+	if success: 
+		return sqlite_database.query_result
+	else:
+		return null
+
+
+func public_insert_user(new_name,new_password,new_access):
+	var query_string : String = \"INSERT INTO User (name, password, access) VALUES ('%s', '%s', %s);\" %[new_name,new_password,new_access]
+	var param_bindings : Array = [24]
+	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
+	if success:
 		return sqlite_database.query_result
 	else:
 		return null

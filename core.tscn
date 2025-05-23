@@ -20,7 +20,5 @@ script = SubResource("GDScript_tvpqx")
 [node name="Net" parent="." instance=ExtResource("1_qhobl")]
 
 [node name="ServerUI" parent="." instance=ExtResource("1_tvpqx")]
-unique_name_in_owner = true
 
 [node name="Database" parent="." instance=ExtResource("3_05t4c")]
-unique_name_in_owner = true
