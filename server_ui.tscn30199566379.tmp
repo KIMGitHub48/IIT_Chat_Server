@@ -15,7 +15,7 @@ var current_selected_item = -1
 @onready var user_panel = $User
 @onready var user_item_list: ItemList = $User/UserItemList
 @onready var write_button = $User/Write
-@onready var login_edit = $User/LoginEdit
+@onready var name_edit = $User/NameEdit
 @onready var password_edit = $User/PasswordEdit
 @onready var access_edit = $User/AccessEdit
 @onready var message_label = $User/Message
@@ -42,12 +42,12 @@ func _on_start_server_pressed():
 			server_log.add_text(\"Ошибка остановки сервера\\n\")
 
 
-func is_valid_login(login) -> bool:
-	if login == \"\": 
+func is_valid_name(name) -> bool:
+	if name == \"\": 
 		message_label.text = \"Введите Имя!\"
 		return false
 	for i in users.size() - 1:
-		if (users[i].login == login and i != current_selected_item): 
+		if (users[i].name == name and i != current_selected_item): 
 			message_label.text = \"Такое имя уже используется!\"
 			return false
 	return true
@@ -72,10 +72,10 @@ func _on_send_data_base_pressed():
 
 func _on_open_user_pressed():
 	user_panel.visible = true
-	users = core_node.database_node.public_get_user_database()
+	users = core_node.database_node.public_get_users_data()
 	user_item_list.clear()
 	for e in users:
-		var text = str(e.login) + \"      \" + str(e.password) + \"      \" + str(e.access)
+		var text = str(e.name) + \"      \" + str(e.password) + \"      \" + str(e.access)
 		user_item_list.add_item(text)
 
 
@@ -85,16 +85,16 @@ func _on_close_pressed() -> void:
 
 func _on_user_item_list_item_selected(index: int) -> void:
 	current_selected_item = index
-	login_edit.text = str(users[index].login)
+	name_edit.text = str(users[index].name)
 	password_edit.text = str(users[index].password)
 	access_edit.text = str(users[index].access)
 
 
 func _on_update_pressed() -> void:
 	if current_selected_item != -1:
-		if is_valid_login(login_edit.text):
-			core_node.database_node.public_update_user(users[current_selected_item].login,
-				login_edit.text,password_edit.text,access_edit.text)
+		if is_valid_name(name_edit.text):
+			core_node.database_node.public_update_user(users[current_selected_item].name,
+				name_edit.text,password_edit.text,access_edit.text)
 			_on_open_user_pressed()
 			message_label.text = \"Обновлено.\"
 	else:
@@ -102,8 +102,8 @@ func _on_update_pressed() -> void:
 
 
 func _on_add_new_pressed() -> void:
-	if (is_valid_login(login_edit.text) and is_valid_password(password_edit.text) and is_valid_access(access_edit.text)):
-		core_node.database_node.public_insert_user(login_edit.text,password_edit.text,access_edit.text)
+	if (is_valid_name(name_edit.text) and is_valid_password(password_edit.text) and is_valid_access(access_edit.text)):
+		core_node.database_node.public_insert_user(name_edit.text,password_edit.text,access_edit.text)
 		message_label.text = \"Обновлено.\"
 		_on_open_user_pressed()
 "
@@ -184,7 +184,7 @@ offset_right = 284.0
 offset_bottom = 348.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_l2pos")
 
-[node name="Login" type="Label" parent="User"]
+[node name="Name" type="Label" parent="User"]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 353.0
@@ -192,7 +192,7 @@ offset_right = 64.0
 offset_bottom = 376.0
 text = "Имя"
 
-[node name="LoginEdit" type="LineEdit" parent="User"]
+[node name="NameEdit" type="LineEdit" parent="User"]
 offset_left = 94.0
 offset_top = 349.0
 offset_right = 282.0

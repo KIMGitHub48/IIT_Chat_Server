@@ -1,0 +1,86 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmxafyf31svhm"]
+
+[sub_resource type="GDScript" id="GDScript_a6cbh"]
+resource_name = "_"
+script/source = "extends Node
+
+
+@onready var authorization_operation = $AuthorizationOperation
+@onready var net_operation = $NetOperation
+
+# ### AuthorizationOperation
+func public_authorization(login, password, remote_sender_id):
+	authorization_operation.public_authorization(login, password, remote_sender_id)
+
+# ### NetOperation
+func register_login(remote_sender_id, login):
+	net_operation.register_login(remote_sender_id, login)
+
+
+func delete_login(remote_sender_id):
+	net_operation.delete_login(remote_sender_id)
+
+
+func public_send_public_message():
+	pass
+"
+
+[sub_resource type="GDScript" id="GDScript_e8gse"]
+resource_name = "_"
+script/source = "extends Node
+
+
+@onready var core_node = get_node(Globals.CORE)
+
+
+func public_authorization(login, password, remote_sender_id):
+	var authorization_passed = false
+	var user_access = -1
+	var user_database = core_node.database_node.public_get_user_database()
+	for user in user_database:
+		if user.login == login:
+			if user.password == password:
+				authorization_passed = true
+				user_access = user.access
+	if authorization_passed:
+		core_node.operation_node.register_login(remote_sender_id, login)
+		core_node.net_node.public_authorization_passed(true, user_access, remote_sender_id)
+	else:
+		core_node.net_node.public_authorization_passed(false, user_access, remote_sender_id)
+	#var remote_sender_id = multiplayer.get_remote_sender_id()
+	#if (authorization_dict.name == \"Admin\"
+		#and authorization_dict.password == \"123\"):
+			#print(\"Авторизация успешна id - \"+str(remote_sender_id))
+			#client_rpc_node.authorization_passed.rpc_id(remote_sender_id, true)
+	#else:
+		#print(\"Ошибка авторизации id - \"+str(remote_sender_id))
+		#client_rpc_node.authorization_passed.rpc_id(remote_sender_id, false)
+"
+
+[sub_resource type="GDScript" id="GDScript_8rtkq"]
+resource_name = "_"
+script/source = "extends Node
+
+
+var users:Dictionary
+
+
+func register_login(remote_sender_id, login):
+	var user = {
+		login = login
+	}
+	users[remote_sender_id] = user
+
+
+func delete_login(remote_sender_id):
+	users.erase(remote_sender_id)
+"
+
+[node name="Operation" type="Node"]
+script = SubResource("GDScript_a6cbh")
+
+[node name="AuthorizationOperation" type="Node" parent="."]
+script = SubResource("GDScript_e8gse")
+
+[node name="NetOperation" type="Node" parent="."]
+script = SubResource("GDScript_8rtkq")

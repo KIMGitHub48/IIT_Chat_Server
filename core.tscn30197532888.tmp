@@ -1,6 +1,5 @@
-[gd_scene load_steps=6 format=3 uid="uid://cxkh7i0c88hrg"]
+[gd_scene load_steps=5 format=3 uid="uid://cxkh7i0c88hrg"]
 
-[ext_resource type="PackedScene" uid="uid://dmxafyf31svhm" path="res://operation.tscn" id="1_l5qv6"]
 [ext_resource type="PackedScene" uid="uid://fqhy675kg8v8" path="res://net.tscn" id="1_qhobl"]
 [ext_resource type="PackedScene" uid="uid://bvjqqkq2ecle1" path="res://server_ui.tscn" id="1_tvpqx"]
 [ext_resource type="PackedScene" uid="uid://dq4wa3fgo0c4x" path="res://database.tscn" id="3_05t4c"]
@@ -10,19 +9,16 @@ resource_name = "_"
 script/source = "extends Node
 
 
-@onready var operation_node = $Operation
+@onready var database_node = $Database
 @onready var server_ui_node = $ServerUI
 @onready var net_node = $Net
-@onready var database_node = $Database
 "
 
 [node name="Core" type="Node"]
 script = SubResource("GDScript_tvpqx")
 
-[node name="Operation" parent="." instance=ExtResource("1_l5qv6")]
+[node name="Net" parent="." instance=ExtResource("1_qhobl")]
 
 [node name="ServerUI" parent="." instance=ExtResource("1_tvpqx")]
-
-[node name="Net" parent="." instance=ExtResource("1_qhobl")]
 
 [node name="Database" parent="." instance=ExtResource("3_05t4c")]

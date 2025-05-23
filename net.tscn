@@ -14,6 +14,10 @@ func public_start_server():
 
 func public_stop_server():
 	return curent_net_node.public_stop_server()
+
+
+func public_authorization_passed(passed, access, remote_sender_id):
+	curent_net_node.public_authorization_passed(passed, access, remote_sender_id)
 "
 
 [sub_resource type="GDScript" id="GDScript_0kkkt"]
@@ -21,19 +25,20 @@ resource_name = "_"
 script/source = "extends Node
 
 
-signal player_connected(peer_id, player_info)
+#signal player_connected(peer_id, player_info)
 
 const SERVER_PORT = 4848
 const MAX_CONNECTIONS = 200
 
 
+@onready var core_node = get_node(Globals.CORE)
 @onready var server_rpc_node = $Rpc/Server
 @onready var client_rpc_node = $Rpc/Client
 
 
 func _ready():
 	multiplayer.peer_connected.connect(_on_player_connected)
-	pass
+	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 
 
 func public_start_server() -> bool:
@@ -51,9 +56,19 @@ func public_stop_server() -> bool:
 	return true
 
 
-func _on_player_connected(id):
-	print(id)
+func public_authorization_passed(passed, access, remote_sender_id):
+	client_rpc_node.authorization_passed.rpc_id(remote_sender_id, passed, access)
+
+
+func _on_player_connected(remote_sender_id):
+	#core_node.operation_node.register_login(id, login)
+	print(remote_sender_id)
 	print(multiplayer.get_peers())
+
+
+func _on_player_disconnected(remote_sender_id):
+	core_node.operation_node.delete_login(remote_sender_id)
+	print(remote_sender_id)
 "
 
 [sub_resource type="GDScript" id="GDScript_mirwn"]
@@ -61,6 +76,7 @@ resource_name = "server_rpc"
 script/source = "extends Node
 
 
+@onready var core_node = get_node(Globals.CORE)
 @onready var client_rpc_node = $\"../Client\"
 
 
@@ -69,15 +85,9 @@ func _ready():
 
 
 @rpc(\"any_peer\",\"call_local\",\"reliable\")
-func peer_authorization(authorization_dict: Dictionary):
+func peer_authorization(login, password):
 	var remote_sender_id = multiplayer.get_remote_sender_id()
-	if (authorization_dict.name == \"Admin\"
-		and authorization_dict.password == \"123\"):
-			print(\"Авторизация успешна id - \"+str(remote_sender_id))
-			client_rpc_node.authorization_passed.rpc_id(remote_sender_id, true)
-	else:
-		print(\"Ошибка авторизации id - \"+str(remote_sender_id))
-		client_rpc_node.authorization_passed.rpc_id(remote_sender_id, false)
+	core_node.operation_node.public_authorization(login, password, remote_sender_id)
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")
@@ -85,6 +95,11 @@ func peer_get_database():
 	var test_dict:Dictionary = { 1:\"test\" }
 	var remote_sender_id = multiplayer.get_remote_sender_id()
 	client_rpc_node.send_database.rpc_id(remote_sender_id, test_dict)
+
+
+@rpc(\"any_peer\",\"call_remote\",\"reliable\")
+func send_public_message(login, message): 
+	pass
 "
 
 [sub_resource type="GDScript" id="GDScript_3xay8"]
@@ -93,7 +108,8 @@ script/source = "extends Node
 
 
 @rpc(\"authority\",\"call_remote\",\"reliable\")
-func authorization_passed(passed): pass
+func authorization_passed(passed, access): 
+	pass
 
 
 @rpc(\"authority\",\"call_local\",\"reliable\")

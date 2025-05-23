@@ -9,8 +9,8 @@ script/source = "extends Node
 @onready var lockal_data_base = $SQLite
 
 
-func public_get_users_data() -> Array:
-	return lockal_data_base.public_get_users_data()
+func public_get_user_database() -> Array:
+	return lockal_data_base.public_get_user_database()
 
 
 func public_update_user(name,new_name,new_password,new_access):
@@ -65,7 +65,7 @@ func _ready():
 	
 
 
-func public_get_users_data():
+func public_get_user_database():
 	var query_string : String = \"SELECT * FROM User;\"
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
@@ -75,8 +75,8 @@ func public_get_users_data():
 		return null
 
 
-func public_update_user(name,new_name,new_password,new_access):
-	var query_string : String = \"UPDATE User SET name = '%s', password = '%s', access = %s WHERE name = '%s';\" %[new_name,new_password,new_access,name]
+func public_update_user(login,login_name,new_password,new_access):
+	var query_string : String = \"UPDATE User SET login = '%s', password = '%s', access = %s WHERE login = '%s';\" %[login_name,new_password,new_access,login]
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success: 
@@ -85,8 +85,8 @@ func public_update_user(name,new_name,new_password,new_access):
 		return null
 
 
-func public_insert_user(new_name,new_password,new_access):
-	var query_string : String = \"INSERT INTO User (name, password, access) VALUES ('%s', '%s', %s);\" %[new_name,new_password,new_access]
+func public_insert_user(new_login,new_password,new_access):
+	var query_string : String = \"INSERT INTO User (login, password, access) VALUES ('%s', '%s', %s);\" %[new_login,new_password,new_access]
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success:
