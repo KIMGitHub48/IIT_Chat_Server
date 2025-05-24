@@ -193,6 +193,7 @@ offset_bottom = 376.0
 text = "Имя"
 
 [node name="LoginEdit" type="LineEdit" parent="User"]
+layout_mode = 0
 offset_left = 94.0
 offset_top = 349.0
 offset_right = 282.0
@@ -207,6 +208,7 @@ offset_bottom = 406.0
 text = "Пароль"
 
 [node name="PasswordEdit" type="LineEdit" parent="User"]
+layout_mode = 0
 offset_left = 94.0
 offset_top = 379.0
 offset_right = 282.0
@@ -221,6 +223,7 @@ offset_bottom = 436.0
 text = "Доступ"
 
 [node name="AccessEdit" type="LineEdit" parent="User"]
+layout_mode = 0
 offset_left = 94.0
 offset_top = 409.0
 offset_right = 282.0

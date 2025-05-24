@@ -7,6 +7,7 @@ script/source = "extends Node
 
 @onready var curent_net_node = $RpcPeer
 
+# ############################Public#################################
 
 func public_start_server():
 	return curent_net_node.public_start_server()
@@ -18,6 +19,14 @@ func public_stop_server():
 
 func public_authorization_passed(passed, access, remote_sender_id):
 	curent_net_node.public_authorization_passed(passed, access, remote_sender_id)
+
+# ##############################Client#################################
+
+func get_chat_public_message(login, message):
+	curent_net_node.get_chat_public_message(login, message)
+
+# #####################################################################
+# #####################################################################
 "
 
 [sub_resource type="GDScript" id="GDScript_0kkkt"]
@@ -40,6 +49,7 @@ func _ready():
 	multiplayer.peer_connected.connect(_on_player_connected)
 	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 
+# ############################Public##################################
 
 func public_start_server() -> bool:
 	var peer = ENetMultiplayerPeer.new()
@@ -55,19 +65,24 @@ func public_stop_server() -> bool:
 	multiplayer.multiplayer_peer.close()
 	return true
 
-
+# ##############################Client#################################
 func public_authorization_passed(passed, access, remote_sender_id):
 	client_rpc_node.authorization_passed.rpc_id(remote_sender_id, passed, access)
 
 
+func get_chat_public_message(login, message):
+	client_rpc_node.get_chat_public_message.rpc(login, message)
+# #####################################################################
+# #####################################################################
+
 func _on_player_connected(remote_sender_id):
-	#core_node.operation_node.register_login(id, login)
+	#Регистрация проходит после авторизации
 	print(remote_sender_id)
 	print(multiplayer.get_peers())
 
 
 func _on_player_disconnected(remote_sender_id):
-	core_node.operation_node.delete_login(remote_sender_id)
+	core_node.operation_node.chat_delete_login(remote_sender_id)
 	print(remote_sender_id)
 "
 
@@ -98,8 +113,9 @@ func peer_get_database():
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")
-func send_public_message(login, message): 
-	pass
+func send_chat_public_message(message): 
+	var remote_sender_id = multiplayer.get_remote_sender_id()
+	core_node.operation_node.send_chat_public_message(remote_sender_id, message)
 "
 
 [sub_resource type="GDScript" id="GDScript_3xay8"]
@@ -108,12 +124,15 @@ script/source = "extends Node
 
 
 @rpc(\"authority\",\"call_remote\",\"reliable\")
-func authorization_passed(passed, access): 
-	pass
+func authorization_passed(passed, access): pass
 
 
 @rpc(\"authority\",\"call_local\",\"reliable\")
-func send_database(database): pass
+func get_chat_public_message(login, message): 
+	pass
+
+#@rpc(\"authority\",\"call_local\",\"reliable\")
+#func send_database(database): pass
 "
 
 [sub_resource type="GDScript" id="GDScript_sfu7w"]
