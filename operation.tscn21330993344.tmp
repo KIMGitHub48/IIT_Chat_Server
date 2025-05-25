@@ -168,29 +168,16 @@ func get_chat_public_message(remote_sender_id ,message):
 
 
 func send_chat_private_message(remote_sender_id, message, login_to):
-	var remote_id_to = login_to_remote_id(login_to)
-	var login_from = remote_id_to_login(remote_sender_id).login
-	CORE.net_node.get_chat_private_message(remote_id_to, message, login_from)
+	
 #endregion##########################################################
 
 #region###################### private ##############################
-func login_to_remote_id(login):
-	var all_users_keys: Array = users.keys()
-	for remote_id in all_users_keys:
-		if users[remote_id].login == login:
-			return remote_id
-
-
-func remote_id_to_login(remote_id):
-	var login = users.get(remote_id)
-	return login
-
 
 func get_logins_array() -> Array:
 	var all_users_keys: Array = users.keys()
 	var users_array: Array
-	for remote_id in all_users_keys:
-		users_array.append(users[remote_id].login)
+	for remote_sender_id in all_users_keys:
+		users_array.append(users[remote_sender_id].login)
 	return users_array
 
 #endregion##########################################################

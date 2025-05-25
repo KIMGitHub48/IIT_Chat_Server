@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Debug="*res://Globals/debug.gd"
 Globals="*res://Globals/globals.gd"
+CORE="*res://Globals/core.gd"
 
 [dotnet]
 

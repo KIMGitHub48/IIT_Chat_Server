@@ -32,21 +32,16 @@ func public_stop_server():
 	return curent_net_node.public_stop_server()
 
 
-func public_authorization_passed(passed, login, access, remote_sender_id):
-	curent_net_node.public_authorization_passed(passed, login, access, remote_sender_id)
+func public_authorization_passed(passed, access, remote_sender_id):
+	curent_net_node.public_authorization_passed(passed, access, remote_sender_id)
 
 # ##############################Client##############################
 
 func get_chat_public_message(login, message):
 	curent_net_node.get_chat_public_message(login, message)
 
-
 func add_user_to_chat(logins: Array):
-	curent_net_node.add_user_to_chat(logins)
-
-
-func get_chat_private_message(remote_id_to, message, login_from):
-	curent_net_node.get_chat_private_message(remote_id_to, message, login_from)
+	curent_net_node.add_user_to_chat(logins: Array)
 # ##################################################################
 
 #endregion##########################################################
@@ -108,22 +103,16 @@ func public_stop_server() -> bool:
 	return true
 
 # ##############################Client#################################
-func public_authorization_passed(passed, login, access, remote_sender_id):
-	client_rpc_node.authorization_passed.rpc_id(remote_sender_id, passed, login, access)
+func public_authorization_passed(passed, access, remote_sender_id):
+	client_rpc_node.authorization_passed.rpc_id(remote_sender_id, passed, access)
 
 
 func get_chat_public_message(login, message):
 	client_rpc_node.get_chat_public_message.rpc(login, message)
 
 
-func add_user_to_chat(logins: Array):
-	client_rpc_node.add_user_to_chat.rpc(logins)
-
-
-func get_chat_private_message(remote_id_to, message, login_from):
-	var remote_sender_id = remote_id_to
-	print(str(remote_id_to) + \"  \" + message + \"  \" +str(login_from))
-	client_rpc_node.get_chat_private_message.rpc_id(remote_sender_id, message, login_from)
+func add_user_to_chat(login):
+	client_rpc_node.add_user_to_chat.rpc(login)
 # #####################################################################
 #endregion##########################################################
 
@@ -178,12 +167,6 @@ func peer_get_database():
 func send_chat_public_message(message): 
 	var remote_sender_id = multiplayer.get_remote_sender_id()
 	core_node.operation_node.send_chat_public_message(remote_sender_id, message)
-
-
-@rpc(\"any_peer\",\"call_remote\",\"reliable\")
-func send_chat_private_message(message, login_to): 
-	var remote_sender_id = multiplayer.get_remote_sender_id()
-	core_node.operation_node.send_chat_private_message(remote_sender_id, message, login_to)
 "
 
 [sub_resource type="GDScript" id="GDScript_3xay8"]
@@ -192,7 +175,7 @@ script/source = "extends Node
 
 
 @rpc(\"authority\",\"call_remote\",\"reliable\")
-func authorization_passed(passed, login, access): pass
+func authorization_passed(passed, access): pass
 
 
 @rpc(\"authority\",\"call_local\",\"reliable\")
@@ -200,11 +183,7 @@ func get_chat_public_message(login, message): pass
 
 
 @rpc(\"authority\",\"call_local\",\"reliable\")
-func add_user_to_chat(logins: Array): pass
-
-
-@rpc(\"authority\",\"call_local\",\"reliable\")
-func get_chat_private_message(message, login_from): pass
+func add_user_to_chat(login): pass
 "
 
 [sub_resource type="GDScript" id="GDScript_sfu7w"]
