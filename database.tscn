@@ -19,12 +19,14 @@ func public_update_user(name,new_name,new_password,new_access):
 
 func public_insert_user(new_name,new_password,new_access):
 	lockal_data_base.public_insert_user(new_name,new_password,new_access)
-#func public_save_to_file():
-	#lockal_node.public_save_to_file()
-#
-#
-#func public_load_from_file():
-	#lockal_node.public_load_from_file()
+
+
+func create_record(querry_dict):
+	return lockal_data_base.create_record(querry_dict)
+
+
+func get_record_database():
+	return lockal_data_base.get_record_database()
 "
 
 [sub_resource type="GDScript" id="GDScript_ra2q6"]
@@ -80,7 +82,7 @@ func public_update_user(login,login_name,new_password,new_access):
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success: 
-		return sqlite_database.query_result
+		return true
 	else:
 		return null
 
@@ -89,10 +91,32 @@ func public_insert_user(new_login,new_password,new_access):
 	var query_string : String = \"INSERT INTO User (login, password, access) VALUES ('%s', '%s', %s);\" %[new_login,new_password,new_access]
 	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
+	#if success:
+		#return sqlite_database.query_result
+	#else:
+		#return null
+
+
+func create_record(querry_dict):
+	var query_string: String = \"INSERT INTO Record (year, month, day, hour, min, clientName, fhoneNomber, comment, nameResponsible)
+		VALUES ('%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')\" %[querry_dict.year, querry_dict.month, querry_dict.day, 
+		querry_dict.hour, querry_dict.min, querry_dict.clientName, querry_dict.fhoneNomber, querry_dict.comment, querry_dict.nameResponsible]
+	var param_bindings : Array = [48]
+	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
+	if success:
+		return true
+	else:
+		return false
+
+
+func get_record_database():
+	var query_string : String = \"SELECT * FROM Record;\"
+	var param_bindings : Array = [24]
+	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success:
 		return sqlite_database.query_result
 	else:
-		return null
+		return false
 "
 
 [node name="Database" type="Node"]

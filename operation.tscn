@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dmxafyf31svhm"]
+[gd_scene load_steps=5 format=3 uid="uid://dmxafyf31svhm"]
 
 [sub_resource type="GDScript" id="GDScript_a6cbh"]
 resource_name = "_"
@@ -15,6 +15,7 @@ script/source = "extends Node
 
 @onready var authorization_operation = $NetOperation/AuthorizationOperation
 @onready var chat_operation = $NetOperation/ChatOperation
+@onready var record_operation = $NetOperation/RecordOperation
 
 #endregion##########################################################
 
@@ -48,6 +49,13 @@ func send_chat_public_message(remote_sender_id, message):
 
 func send_chat_private_message(remote_sender_id, message, login_to):
 	chat_operation.send_chat_private_message(remote_sender_id, message, login_to)
+
+# ##################################################################
+# ####################### RecordOperation ##########################
+
+func create_record(remote_sender_id, querry_dict):
+	record_operation.create_record(remote_sender_id, querry_dict)
+
 # ##################################################################
 #endregion##########################################################
 
@@ -202,6 +210,49 @@ func get_logins_array() -> Array:
 #endregion##########################################################
 "
 
+[sub_resource type="GDScript" id="GDScript_h5rxx"]
+resource_name = "_"
+script/source = "extends Node
+
+#region####################### var #################################
+
+
+
+#endregion##########################################################
+
+#region##################### @onready ##############################
+
+
+
+#endregion##########################################################
+
+#region################# _ready _process ###########################
+
+
+
+#endregion##########################################################
+
+#region###################### public ###############################
+
+func create_record(remote_sender_id, querry_dict): 
+	if CORE.database_node.create_record(querry_dict):
+		CORE.net_node.send_record_database_id(remote_sender_id)
+
+#endregion##########################################################
+
+#region###################### private ##############################
+
+
+
+#endregion##########################################################
+
+#region###################### signal ###############################
+
+
+
+#endregion##########################################################
+"
+
 [node name="Operation" type="Node"]
 script = SubResource("GDScript_a6cbh")
 
@@ -212,3 +263,6 @@ script = SubResource("GDScript_e8gse")
 
 [node name="ChatOperation" type="Node" parent="NetOperation"]
 script = SubResource("GDScript_8rtkq")
+
+[node name="RecordOperation" type="Node" parent="NetOperation"]
+script = SubResource("GDScript_h5rxx")

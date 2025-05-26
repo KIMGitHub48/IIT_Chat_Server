@@ -25,23 +25,6 @@ func _ready():
 	user_panel.visible = false
 
 
-func _on_start_server_pressed():
-	if start_server_button.get_meta(\"SERVER_START\") == false:
-		if get_parent().net_node.public_start_server():
-			start_server_button.set_meta(\"SERVER_START\", true)
-			server_log.add_text(\"Сервер запущен\\n\")
-			start_server_button.text = \"Остановить сервер\"
-		else:
-			server_log.add_text(\"Ошибка запуска сервера\")
-	else:
-		if get_parent().net_node.public_stop_server():
-			start_server_button.set_meta(\"SERVER_START\", false)
-			server_log.add_text(\"Сервер остановлен\\n\")
-			start_server_button.text = \"Запустить сервер\"
-		else:
-			server_log.add_text(\"Ошибка остановки сервера\\n\")
-
-
 func is_valid_login(login) -> bool:
 	if login == \"\": 
 		message_label.text = \"Введите Имя!\"
@@ -106,6 +89,23 @@ func _on_add_new_pressed() -> void:
 		core_node.database_node.public_insert_user(login_edit.text,password_edit.text,access_edit.text)
 		message_label.text = \"Обновлено.\"
 		_on_open_user_pressed()
+
+
+func _on_start_server_pressed():
+	if start_server_button.get_meta(\"SERVER_START\") == false:
+		if get_parent().net_node.public_start_server():
+			start_server_button.set_meta(\"SERVER_START\", true)
+			server_log.add_text(\"Сервер запущен\\n\")
+			start_server_button.text = \"Остановить сервер\"
+		else:
+			server_log.add_text(\"Ошибка запуска сервера\")
+	else:
+		if get_parent().net_node.public_stop_server():
+			start_server_button.set_meta(\"SERVER_START\", false)
+			server_log.add_text(\"Сервер остановлен\\n\")
+			start_server_button.text = \"Запустить сервер\"
+		else:
+			server_log.add_text(\"Ошибка остановки сервера\\n\")
 "
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wuek4"]
