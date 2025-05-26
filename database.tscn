@@ -25,6 +25,10 @@ func create_record(querry_dict):
 	return lockal_data_base.create_record(querry_dict)
 
 
+func update_record(querry_dict, target_dict):
+	return lockal_data_base.update_record(querry_dict, target_dict)
+
+
 func get_record_database():
 	return lockal_data_base.get_record_database()
 "
@@ -107,6 +111,17 @@ func create_record(querry_dict):
 		return true
 	else:
 		return false
+
+
+func update_record(querry_dict, target_dict):
+	var query_string: String = \"UPDATE Record SET year = '%s', month = '%s', day = '%s', hour = '%s', min = '%s',
+		clientName = '%s', fhoneNomber = '%s', comment = '%s', nameResponsible = '%s' WHERE year = '%s', month = '%s', 
+		day = '%s', hour = '%s', min = '%s', clientName = '%s', fhoneNomber = '%s', comment = '%s', 
+		nameResponsible = '%s'\" %[querry_dict.year, querry_dict.month, querry_dict.day, querry_dict.hour, querry_dict.min, 
+		querry_dict.clientName, querry_dict.fhoneNomber, querry_dict.comment, querry_dict.nameResponsible, querry_dict.year, 
+		querry_dict.month, querry_dict.day, querry_dict.hour, querry_dict.min, querry_dict.clientName, querry_dict.fhoneNomber, 
+		querry_dict.comment, querry_dict.nameResponsible]
+	pass
 
 
 func get_record_database():

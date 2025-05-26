@@ -201,6 +201,13 @@ func create_record(querry_dict):
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")
+#func update_record(querry_dict, target_dict):
+func update_record(): 
+	var remote_sender_id = multiplayer.get_remote_sender_id()
+	#CORE.operation_node.create_record(remote_sender_id, querry_dict, target_dict)
+
+
+@rpc(\"any_peer\",\"call_remote\",\"reliable\")
 func get_record_database():
 	var remote_sender_id = multiplayer.get_remote_sender_id()
 	CORE.net_node.send_record_database_id(remote_sender_id)

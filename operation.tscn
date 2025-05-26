@@ -56,6 +56,10 @@ func send_chat_private_message(remote_sender_id, message, login_to):
 func create_record(remote_sender_id, querry_dict):
 	record_operation.create_record(remote_sender_id, querry_dict)
 
+
+func update_record(remote_sender_id, querry_dict, target_dict):
+	record_operation.update_record(remote_sender_id, querry_dict, target_dict)
+
 # ##################################################################
 #endregion##########################################################
 
@@ -236,6 +240,11 @@ script/source = "extends Node
 
 func create_record(remote_sender_id, querry_dict): 
 	if CORE.database_node.create_record(querry_dict):
+		CORE.net_node.send_record_database_id(remote_sender_id)
+
+
+func update_record(remote_sender_id, querry_dict, target_dict):
+	if CORE.database_node.update_record(querry_dict, target_dict):
 		CORE.net_node.send_record_database_id(remote_sender_id)
 
 #endregion##########################################################
