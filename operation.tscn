@@ -35,7 +35,7 @@ func public_authorization(login, password, remote_sender_id):
 # ##################################################################
 # ######################## ChatOperation ###########################
 
-func chat_register_login(remote_sender_id, login):
+func chat_register_login(remote_sender_id, login) -> void:
 	chat_operation.chat_register_login(remote_sender_id, login)
 
 

@@ -59,79 +59,98 @@ script/source = "extends Node
 resource_name = "_"
 script/source = "extends Node
 
+#region####################### var #################################
 
 var sqlite_database
 
+#endregion##########################################################
+
+#region##################### @onready ##############################
 
 func _ready():
 	sqlite_database = SQLite.new()
 	sqlite_database.path = \"res://sqlite_database.db\"
 	sqlite_database.verbosity_level = SQLite.VerbosityLevel.NORMAL
 	sqlite_database.open_db()
-	
+
+#endregion##########################################################
+
+#region################# _ready _process ###########################
 
 
-func public_get_user_database():
+
+#endregion##########################################################
+
+#region###################### public ###############################
+
+func public_get_user_database() -> Array:
 	var query_string : String = \"SELECT * FROM User;\"
-	var param_bindings : Array = [24]
-	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
-	if success: 
+	if send_request(query_string):
 		return sqlite_database.query_result
 	else:
-		return null
+		return []
 
 
 func public_update_user(login,login_name,new_password,new_access):
 	var query_string : String = \"UPDATE User SET login = '%s', password = '%s', access = %s WHERE login = '%s';\" %[login_name,new_password,new_access,login]
-	var param_bindings : Array = [24]
-	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
-	if success: 
-		return true
-	else:
-		return null
+	return send_request(query_string)
 
 
 func public_insert_user(new_login,new_password,new_access):
 	var query_string : String = \"INSERT INTO User (login, password, access) VALUES ('%s', '%s', %s);\" %[new_login,new_password,new_access]
-	var param_bindings : Array = [24]
-	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
-	#if success:
-		#return sqlite_database.query_result
-	#else:
-		#return null
+	return send_request(query_string)
 
 
 func create_record(querry_dict):
 	var query_string: String = \"INSERT INTO Record (year, month, day, hour, min, clientName, fhoneNomber, comment, nameResponsible)
 		VALUES ('%s', '%s','%s', '%s', '%s', '%s', '%s', '%s', '%s')\" %[querry_dict.year, querry_dict.month, querry_dict.day, 
 		querry_dict.hour, querry_dict.min, querry_dict.clientName, querry_dict.fhoneNomber, querry_dict.comment, querry_dict.nameResponsible]
-	var param_bindings : Array = [48]
+	return send_request(query_string)
+
+
+func update_record(querry_dict, target_dict):
+	var query_string: String = \"UPDATE Record SET year = '%s', month = '%s', day = '%s', hour = '%s', min = '%s',
+		clientName = '%s', fhoneNomber = '%s', comment = '%s', nameResponsible = '%s' WHERE year = '%s' AND month = '%s'  
+		AND day = '%s' AND hour = '%s' AND min = '%s' AND clientName = '%s' AND fhoneNomber = '%s' AND comment = '%s' AND 
+		nameResponsible = '%s'\" %[querry_dict.year, querry_dict.month, querry_dict.day, querry_dict.hour, querry_dict.min, 
+		querry_dict.clientName, querry_dict.fhoneNomber, querry_dict.comment, querry_dict.nameResponsible, target_dict.year, 
+		target_dict.month, target_dict.day, target_dict.hour, target_dict.min, target_dict.clientName, target_dict.fhoneNomber, 
+		target_dict.comment, target_dict.nameResponsible]
+	return send_request(query_string)
+
+
+func get_record_database() -> Array:
+	var query_string : String = \"SELECT * FROM Record;\"
+	if send_request(query_string):
+		return sqlite_database.query_result
+	else:
+		return []
+
+#endregion##########################################################
+
+#region###################### private ##############################
+
+func send_request(query_string) -> bool:
+	var param_bindings : Array = [24]
 	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
 	if success:
 		return true
 	else:
 		return false
 
+#endregion##########################################################
 
-func update_record(querry_dict, target_dict):
-	var query_string: String = \"UPDATE Record SET year = '%s', month = '%s', day = '%s', hour = '%s', min = '%s',
-		clientName = '%s', fhoneNomber = '%s', comment = '%s', nameResponsible = '%s' WHERE year = '%s', month = '%s', 
-		day = '%s', hour = '%s', min = '%s', clientName = '%s', fhoneNomber = '%s', comment = '%s', 
-		nameResponsible = '%s'\" %[querry_dict.year, querry_dict.month, querry_dict.day, querry_dict.hour, querry_dict.min, 
-		querry_dict.clientName, querry_dict.fhoneNomber, querry_dict.comment, querry_dict.nameResponsible, querry_dict.year, 
-		querry_dict.month, querry_dict.day, querry_dict.hour, querry_dict.min, querry_dict.clientName, querry_dict.fhoneNomber, 
-		querry_dict.comment, querry_dict.nameResponsible]
-	pass
+#region###################### signal ###############################
 
 
-func get_record_database():
-	var query_string : String = \"SELECT * FROM Record;\"
-	var param_bindings : Array = [24]
-	var success = sqlite_database.query_with_bindings(query_string, param_bindings)
-	if success:
-		return sqlite_database.query_result
-	else:
-		return false
+
+#endregion##########################################################
+
+
+
+
+
+	
 "
 
 [node name="Database" type="Node"]

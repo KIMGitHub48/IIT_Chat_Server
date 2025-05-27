@@ -74,7 +74,7 @@ script/source = "extends Node
 
 #region####################### var #################################
 
-const SERVER_PORT = 4848
+var server_port: int
 const MAX_CONNECTIONS = 200
 
 #endregion##########################################################
@@ -90,6 +90,7 @@ const MAX_CONNECTIONS = 200
 #region################# _ready _process ###########################
 
 func _ready():
+	server_port = CORE.server_ui_node.get_server_port()
 	multiplayer.peer_connected.connect(_on_player_connected)
 	multiplayer.peer_disconnected.connect(_on_player_disconnected)
 
@@ -99,7 +100,7 @@ func _ready():
 
 func public_start_server() -> bool:
 	var peer = ENetMultiplayerPeer.new()
-	var error = peer.create_server(SERVER_PORT, MAX_CONNECTIONS)
+	var error = peer.create_server(server_port, MAX_CONNECTIONS)
 	if error:
 		return false
 	else:
@@ -159,7 +160,8 @@ func _on_player_disconnected(remote_sender_id):
 [sub_resource type="GDScript" id="GDScript_mirwn"]
 resource_name = "server_rpc"
 script/source = "extends Node
-
+## Если вдруг перестали инициироваться методы rpc с другой стороны, неоьходимо проверить
+## сигнатуры ВСЕХ методов в ноде, сигнатуры всех методов rpc должны быть одинаковы!
 
 @onready var core_node = get_node(Globals.CORE)
 @onready var client_rpc_node = $\"../Client\"
@@ -173,13 +175,6 @@ func _ready():
 func peer_authorization(login, password):
 	var remote_sender_id = multiplayer.get_remote_sender_id()
 	core_node.operation_node.public_authorization(login, password, remote_sender_id)
-
-
-#@rpc(\"any_peer\",\"call_remote\",\"reliable\")
-#func peer_get_database():
-	#var test_dict:Dictionary = { 1:\"test\" }
-	#var remote_sender_id = multiplayer.get_remote_sender_id()
-	#client_rpc_node.send_database.rpc_id(remote_sender_id, test_dict)
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")
@@ -201,10 +196,9 @@ func create_record(querry_dict):
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")
-#func update_record(querry_dict, target_dict):
-func update_record(): 
+func update_record(querry_dict, target_dict):
 	var remote_sender_id = multiplayer.get_remote_sender_id()
-	#CORE.operation_node.create_record(remote_sender_id, querry_dict, target_dict)
+	CORE.operation_node.update_record(remote_sender_id, querry_dict, target_dict)
 
 
 @rpc(\"any_peer\",\"call_remote\",\"reliable\")

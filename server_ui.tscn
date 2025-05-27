@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvjqqkq2ecle1"]
+[gd_scene load_steps=6 format=3 uid="uid://bvjqqkq2ecle1"]
 
 [sub_resource type="GDScript" id="GDScript_xb563"]
 resource_name = "_"
@@ -9,6 +9,7 @@ var users: Array
 var current_selected_item = -1
 
 
+@onready var server_port = $Main/PortEdit
 @onready var core_node = get_node(Globals.CORE)
 @onready var server_log:RichTextLabel = $Main/ServerLog
 @onready var start_server_button:Button = $Main/StartServerButton
@@ -23,6 +24,10 @@ var current_selected_item = -1
 
 func _ready():
 	user_panel.visible = false
+
+
+func get_server_port() -> int:
+	return int(server_port.text)
 
 
 func is_valid_login(login) -> bool:
@@ -47,10 +52,6 @@ func is_valid_access(access) -> bool:
 	if (access == \"0\" or access == \"1\" or access == \"2\"): return true
 	message_label.text = \"Доступ не равен 0,1,2!\"
 	return false
-
-
-func _on_send_data_base_pressed():
-	core_node.database_node.public_load_from_file()
 
 
 func _on_open_user_pressed():
@@ -108,6 +109,9 @@ func _on_start_server_pressed():
 			server_log.add_text(\"Ошибка остановки сервера\\n\")
 "
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pc1t6"]
+bg_color = Color(0, 0, 0, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wuek4"]
 bg_color = Color(0, 0, 0, 1)
 
@@ -123,6 +127,7 @@ script = SubResource("GDScript_xb563")
 [node name="Main" type="Panel" parent="."]
 offset_right = 1147.0
 offset_bottom = 646.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_pc1t6")
 
 [node name="StartServerButton" type="Button" parent="Main"]
 layout_mode = 0
@@ -140,21 +145,31 @@ offset_top = 406.0
 offset_right = 1149.0
 offset_bottom = 647.0
 
-[node name="SendDataBase" type="Button" parent="Main"]
-layout_mode = 0
-offset_left = 430.0
-offset_top = 206.0
-offset_right = 633.0
-offset_bottom = 237.0
-text = "Отправить базу данных"
-
 [node name="OpenUser" type="Button" parent="Main"]
 layout_mode = 0
 offset_right = 124.0
 offset_bottom = 31.0
 text = "Пользователи"
 
+[node name="PortEdit" type="LineEdit" parent="Main"]
+layout_mode = 0
+offset_left = 493.0
+offset_top = 203.0
+offset_right = 561.563
+offset_bottom = 234.0
+text = "4848"
+alignment = 1
+
+[node name="Port" type="Label" parent="Main"]
+layout_mode = 0
+offset_left = 507.0
+offset_top = 179.0
+offset_right = 547.0
+offset_bottom = 202.0
+text = "Порт"
+
 [node name="User" type="Panel" parent="."]
+visible = false
 offset_left = 391.0
 offset_top = 89.0
 offset_right = 675.0
@@ -214,7 +229,7 @@ offset_top = 379.0
 offset_right = 282.0
 offset_bottom = 410.0
 
-[node name="Доступ" type="Label" parent="User"]
+[node name="Access" type="Label" parent="User"]
 layout_mode = 0
 offset_left = 14.0
 offset_top = 413.0
@@ -254,7 +269,6 @@ offset_bottom = 469.0
 horizontal_alignment = 1
 
 [connection signal="pressed" from="Main/StartServerButton" to="." method="_on_start_server_pressed"]
-[connection signal="pressed" from="Main/SendDataBase" to="." method="_on_send_data_base_pressed"]
 [connection signal="pressed" from="Main/OpenUser" to="." method="_on_open_user_pressed"]
 [connection signal="pressed" from="User/Close" to="." method="_on_close_pressed"]
 [connection signal="item_selected" from="User/UserItemList" to="." method="_on_user_item_list_item_selected"]
