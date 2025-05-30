@@ -13,9 +13,9 @@ script/source = "extends Node
 
 #region##################### @onready ##############################
 
-@onready var authorization_operation = $NetOperation/AuthorizationOperation
-@onready var chat_operation = $NetOperation/ChatOperation
-@onready var record_operation = $NetOperation/RecordOperation
+@onready var authorization_operation = $AuthorizationOperation
+@onready var chat_operation = $ChatOperation
+@onready var record_operation = $RecordOperation
 
 #endregion##########################################################
 
@@ -136,6 +136,54 @@ func access_register(remote_sender_id, login, access):
 #endregion##########################################################
 "
 
+[sub_resource type="GDScript" id="GDScript_h5rxx"]
+resource_name = "_"
+script/source = "extends Node
+
+#region####################### var #################################
+
+
+
+#endregion##########################################################
+
+#region##################### @onready ##############################
+
+
+
+#endregion##########################################################
+
+#region################# _ready _process ###########################
+
+
+
+#endregion##########################################################
+
+#region###################### public ###############################
+
+func create_record(remote_sender_id, querry_dict): 
+	if CORE.database_node.create_record(querry_dict):
+		CORE.net_node.send_record_database_id(remote_sender_id)
+
+
+func update_record(remote_sender_id, querry_dict, target_dict):
+	if CORE.database_node.update_record(querry_dict, target_dict):
+		CORE.net_node.send_record_database_id(remote_sender_id)
+
+#endregion##########################################################
+
+#region###################### private ##############################
+
+
+
+#endregion##########################################################
+
+#region###################### signal ###############################
+
+
+
+#endregion##########################################################
+"
+
 [sub_resource type="GDScript" id="GDScript_8rtkq"]
 resource_name = "_"
 script/source = "extends Node
@@ -214,64 +262,14 @@ func get_logins_array() -> Array:
 #endregion##########################################################
 "
 
-[sub_resource type="GDScript" id="GDScript_h5rxx"]
-resource_name = "_"
-script/source = "extends Node
-
-#region####################### var #################################
-
-
-
-#endregion##########################################################
-
-#region##################### @onready ##############################
-
-
-
-#endregion##########################################################
-
-#region################# _ready _process ###########################
-
-
-
-#endregion##########################################################
-
-#region###################### public ###############################
-
-func create_record(remote_sender_id, querry_dict): 
-	if CORE.database_node.create_record(querry_dict):
-		CORE.net_node.send_record_database_id(remote_sender_id)
-
-
-func update_record(remote_sender_id, querry_dict, target_dict):
-	if CORE.database_node.update_record(querry_dict, target_dict):
-		CORE.net_node.send_record_database_id(remote_sender_id)
-
-#endregion##########################################################
-
-#region###################### private ##############################
-
-
-
-#endregion##########################################################
-
-#region###################### signal ###############################
-
-
-
-#endregion##########################################################
-"
-
 [node name="Operation" type="Node"]
 script = SubResource("GDScript_a6cbh")
 
-[node name="NetOperation" type="Node" parent="."]
-
-[node name="AuthorizationOperation" type="Node" parent="NetOperation"]
+[node name="AuthorizationOperation" type="Node" parent="."]
 script = SubResource("GDScript_e8gse")
 
-[node name="ChatOperation" type="Node" parent="NetOperation"]
-script = SubResource("GDScript_8rtkq")
-
-[node name="RecordOperation" type="Node" parent="NetOperation"]
+[node name="RecordOperation" type="Node" parent="."]
 script = SubResource("GDScript_h5rxx")
+
+[node name="ChatOperation" type="Node" parent="."]
+script = SubResource("GDScript_8rtkq")

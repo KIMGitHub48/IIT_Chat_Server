@@ -167,10 +167,6 @@ script/source = "extends Node
 @onready var client_rpc_node = $\"../Client\"
 
 
-func _ready():
-	print(self.get_path())
-
-
 @rpc(\"any_peer\",\"call_local\",\"reliable\")
 func peer_authorization(login, password):
 	var remote_sender_id = multiplayer.get_remote_sender_id()

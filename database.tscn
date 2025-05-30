@@ -61,7 +61,7 @@ script/source = "extends Node
 
 #region####################### var #################################
 
-var sqlite_database
+var sqlite_database: SQLite
 
 #endregion##########################################################
 
