@@ -51,6 +51,11 @@ func get_chat_private_message(remote_id_to, message, login_from):
 
 func send_record_database_id(remote_sender_id):
 	curent_net_node.send_record_database_id(remote_sender_id)
+
+
+func send_chat_log_database(chat_log_database, remote_sender_id):
+	curent_net_node.send_chat_log_database(chat_log_database, remote_sender_id)
+
 # ##################################################################
 
 #endregion##########################################################
@@ -133,6 +138,10 @@ func get_chat_private_message(remote_id_to, message, login_from):
 func send_record_database_id(remote_sender_id):
 	var record_database = CORE.database_node.get_record_database()
 	client_rpc_node.send_record_database_id.rpc_id(remote_sender_id, record_database)
+
+
+func send_chat_log_database(chat_log_database, remote_sender_id):
+	client_rpc_node.send_chat_log_database.rpc_id(remote_sender_id, chat_log_database)
 # #####################################################################
 #endregion##########################################################
 
@@ -201,6 +210,12 @@ func update_record(querry_dict, target_dict):
 func get_record_database():
 	var remote_sender_id = multiplayer.get_remote_sender_id()
 	CORE.net_node.send_record_database_id(remote_sender_id)
+
+
+@rpc(\"any_peer\",\"call_remote\",\"reliable\")
+func get_chat_log_database():
+	var remote_sender_id = multiplayer.get_remote_sender_id()
+	CORE.operation_node.get_chat_log_database(remote_sender_id)
 "
 
 [sub_resource type="GDScript" id="GDScript_3xay8"]
@@ -226,6 +241,10 @@ func get_chat_private_message(message, login_from): pass
 
 @rpc(\"authority\",\"call_local\",\"reliable\")
 func send_record_database_id(record_database): pass
+
+
+@rpc(\"authority\",\"call_local\",\"reliable\")
+func send_chat_log_database(chat_log_database): pass
 "
 
 [sub_resource type="GDScript" id="GDScript_sfu7w"]

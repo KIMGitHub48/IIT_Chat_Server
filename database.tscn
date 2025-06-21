@@ -21,6 +21,10 @@ func public_insert_user(new_name,new_password,new_access):
 	lockal_data_base.public_insert_user(new_name,new_password,new_access)
 
 
+func insert_chat_log_message(data_time: String, login: String, 
+	message: String, private_login_destination: String):
+	lockal_data_base.insert_chat_log_message(data_time, login, message, private_login_destination)
+
 func create_record(querry_dict):
 	return lockal_data_base.create_record(querry_dict)
 
@@ -31,6 +35,10 @@ func update_record(querry_dict, target_dict):
 
 func get_record_database():
 	return lockal_data_base.get_record_database()
+
+
+func get_chat_log_database():
+	return lockal_data_base.get_chat_log_database()
 "
 
 [sub_resource type="GDScript" id="GDScript_ra2q6"]
@@ -83,6 +91,12 @@ func _ready():
 
 #region###################### public ###############################
 
+func insert_chat_log_message(data_time: String, login: String, 
+	message: String, private_login_destination: String):
+	var query_string : String = \"INSERT INTO ChatLog (dataTime, login, message, privateLoginDestination) VALUES ('%s', '%s', '%s', '%s');\" %[data_time, login, message, private_login_destination]
+	return send_request(query_string)
+
+
 func public_get_user_database() -> Array:
 	var query_string : String = \"SELECT * FROM User;\"
 	if send_request(query_string):
@@ -125,6 +139,14 @@ func get_record_database() -> Array:
 		return sqlite_database.query_result
 	else:
 		return []
+
+
+func get_chat_log_database():
+	var query_string : String = \"SELECT * FROM ChatLog;\"
+	if send_request(query_string):
+		return sqlite_database.query_result
+	else:
+		return null
 
 #endregion##########################################################
 

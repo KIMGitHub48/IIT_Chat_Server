@@ -169,7 +169,6 @@ offset_bottom = 202.0
 text = "Порт"
 
 [node name="User" type="Panel" parent="."]
-visible = false
 offset_left = 391.0
 offset_top = 89.0
 offset_right = 675.0

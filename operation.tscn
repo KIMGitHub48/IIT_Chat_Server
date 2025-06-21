@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dmxafyf31svhm"]
+[gd_scene load_steps=6 format=3 uid="uid://dmxafyf31svhm"]
 
 [sub_resource type="GDScript" id="GDScript_a6cbh"]
 resource_name = "_"
@@ -16,6 +16,7 @@ script/source = "extends Node
 @onready var authorization_operation = $AuthorizationOperation
 @onready var chat_operation = $ChatOperation
 @onready var record_operation = $RecordOperation
+@onready var chat_log_operation = $ChatLogOperation
 
 #endregion##########################################################
 
@@ -59,6 +60,12 @@ func create_record(remote_sender_id, querry_dict):
 
 func update_record(remote_sender_id, querry_dict, target_dict):
 	record_operation.update_record(remote_sender_id, querry_dict, target_dict)
+
+# ##################################################################
+# ####################### ChatLogOperation #########################
+
+func get_chat_log_database(remote_sender_id):
+	chat_log_operation.get_chat_log_database(remote_sender_id)
 
 # ##################################################################
 #endregion##########################################################
@@ -121,11 +128,8 @@ func public_authorization(login, password, remote_sender_id):
 #region###################### private ##############################
 
 func access_register(remote_sender_id, login, access):
-	if (access == 0 or access == 1):
-		core_node.operation_node.chat_register_login(remote_sender_id, login)
-	else: if access == 2:
-		core_node.operation_node.chat_register_login(remote_sender_id, login)
-	
+	core_node.operation_node.chat_register_login(remote_sender_id, login)
+
 
 #endregion##########################################################
 
@@ -224,12 +228,16 @@ func get_chat_public_message(remote_sender_id ,message):
 	var keys = users.keys()
 	var user_dict = users.get(remote_sender_id)
 	var login = user_dict.login
+	CORE.database_node.insert_chat_log_message(Time.get_datetime_string_from_system(), 
+		login, message, \"\")
 	core_node.net_node.get_chat_public_message(login, message)
 
 
 func send_chat_private_message(remote_sender_id, message, login_to):
 	var remote_id_to = login_to_remote_id(login_to)
 	var login_from = remote_id_to_login(remote_sender_id).login
+	CORE.database_node.insert_chat_log_message(Time.get_datetime_string_from_system(), 
+		login_from, message, login_to)
 	CORE.net_node.get_chat_private_message(remote_id_to, message, login_from)
 #endregion##########################################################
 
@@ -262,6 +270,49 @@ func get_logins_array() -> Array:
 #endregion##########################################################
 "
 
+[sub_resource type="GDScript" id="GDScript_otlu1"]
+resource_name = "_"
+script/source = "extends Node
+#region####################### var #################################
+
+
+
+#endregion##########################################################
+
+#region##################### @onready ##############################
+
+
+
+#endregion##########################################################
+
+#region################# _ready _process ###########################
+
+
+
+#endregion##########################################################
+
+#region###################### public ###############################
+
+func get_chat_log_database(remote_sender_id):
+	var chat_log_database = CORE.database_node.get_chat_log_database()
+	if chat_log_database != null:
+		CORE.net_node.send_chat_log_database(chat_log_database, remote_sender_id)
+
+#endregion##########################################################
+
+#region###################### private ##############################
+
+
+
+#endregion##########################################################
+
+#region###################### signal ###############################
+
+
+
+#endregion##########################################################
+"
+
 [node name="Operation" type="Node"]
 script = SubResource("GDScript_a6cbh")
 
@@ -273,3 +324,6 @@ script = SubResource("GDScript_h5rxx")
 
 [node name="ChatOperation" type="Node" parent="."]
 script = SubResource("GDScript_8rtkq")
+
+[node name="ChatLogOperation" type="Node" parent="."]
+script = SubResource("GDScript_otlu1")
